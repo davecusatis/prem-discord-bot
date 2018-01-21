@@ -42,7 +42,6 @@ type Order struct {
 }
 
 func sellyHandler(w http.ResponseWriter, req *http.Request) {
-	// get secret
 	secret := req.URL.Query().Get("secret")
 	if secret != appSecret {
 		log.Print("Wrong secret provided")
@@ -53,8 +52,6 @@ func sellyHandler(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("Error parsing body: %s", err)
 	}
-
-	// post discord message
 
 	_, err = discordSession.ChannelMessageSendComplex(channelID, messageFromOrder(order))
 	if err != nil {
