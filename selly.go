@@ -61,27 +61,22 @@ func sellyHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func embedFromOrder(order Order) *discordgo.MessageEmbed {
-	fields := make([]*discordgo.MessageEmbedField, 4)
+	fields := make([]*discordgo.MessageEmbedField, 3)
 
 	fields[0] = new(discordgo.MessageEmbedField)
-	fields[0].Name = "ID"
-	fields[0].Value = order.ID
+	fields[0].Name = "Email"
+	fields[0].Value = order.Email
 	fields[0].Inline = true
 
 	fields[1] = new(discordgo.MessageEmbedField)
-	fields[1].Name = "Email"
-	fields[1].Value = order.Email
+	fields[1].Name = "Value"
+	fields[1].Value = order.Value
 	fields[1].Inline = true
 
 	fields[2] = new(discordgo.MessageEmbedField)
-	fields[2].Name = "Value"
-	fields[2].Value = order.Value
+	fields[2].Name = "Discord"
+	fields[2].Value = fmt.Sprintf("%s", order.Custom["0"])
 	fields[2].Inline = true
-
-	fields[3] = new(discordgo.MessageEmbedField)
-	fields[3].Name = "Discord"
-	fields[3].Value = fmt.Sprintf("%s", order.Custom["0"])
-	fields[3].Inline = true
 
 	embed := new(discordgo.MessageEmbed)
 	thumbnail := new(discordgo.MessageEmbedThumbnail)
