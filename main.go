@@ -7,11 +7,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const (
-	truestr      = "true"
-	botPortConfg = "BOT_PORT"
-)
-
 func main() {
 	parseConfig()
 	appSecret = mustGetConfigValue("APP_SECRET")
@@ -20,11 +15,15 @@ func main() {
 	botport := getConfigValue("BOT_PORT", "8000")
 
 	var err error
-	discordSession, err = discordgo.New(discordToken)
+	discordSession, err = discordgo.New("Bot " + discordToken)
 	if err != nil {
 		log.Fatal("Error creating discord session")
 	}
-
-	http.HandleFunc("/webook", sellyHandler)
-	http.ListenAndServe(":"+botport, nil)
+	err = discordSession.Open()
+	if err != nil {
+		log.Fatal("Error opening discord connection")
+	}
+	http.HandleFunc("/webhook", sellyHandler)
+	log.Printf("Starting bot on port %s", botport)
+	log.Fatal(http.ListenAndServe(":"+botport, nil))
 }

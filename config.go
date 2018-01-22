@@ -34,5 +34,5 @@ func mustGetConfigValue(key string) string {
 	if val, ok := configs[key]; ok {
 		return val
 	}
-	panic("Unknown config value")
+	panic("Unknown config value " + key)
 }
