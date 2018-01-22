@@ -80,7 +80,7 @@ func embedFromOrder(order Order) *discordgo.MessageEmbed {
 
 	fields[3] = new(discordgo.MessageEmbedField)
 	fields[3].Name = "Discord"
-	fields[3].Value = fmt.Sprint("%#v", order.Custom["0"])
+	fields[3].Value = fmt.Sprintf("%s", order.Custom["0"])
 	fields[3].Inline = true
 
 	embed := new(discordgo.MessageEmbed)
