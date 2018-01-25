@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
+)
+
+const (
+	MONTH_DURATION = "720h"
 )
 
 var (
@@ -15,6 +20,11 @@ var (
 	channelID      string
 	discordSession *discordgo.Session
 )
+
+type SellyHandler struct {
+	db             *Database
+	discordSession *discordgo.Session
+}
 
 // Order is the tpe for selly orders
 type Order struct {
@@ -41,7 +51,7 @@ type Order struct {
 	UpdatedAt     string            `json:"updated_at"`
 }
 
-func sellyHandler(w http.ResponseWriter, req *http.Request) {
+func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	secret := req.URL.Query().Get("secret")
 	if secret != appSecret {
 		log.Print("Wrong secret provided")
@@ -53,10 +63,20 @@ func sellyHandler(w http.ResponseWriter, req *http.Request) {
 		log.Printf("Error parsing body: %s", err)
 	}
 
-	_, err = discordSession.ChannelMessageSendEmbed(channelID, embedFromOrder(order))
+	_, err = h.discordSession.ChannelMessageSendEmbed(channelID, embedFromOrder(order))
 	if err != nil {
 		log.Printf("Error sending message to channel %s: %s", channelID, err)
 	}
+
+	// todo add OR update
+	now := time.Now().UTC().UnixNano()
+	thirtyDays, _ := time.ParseDuration(MONTH_DURATION)
+	err = h.db.addUser(&User{
+		email:      order.Email,
+		discordTag: order.Custom["0"],
+		startDate:  now,
+		endDate:    now + thirtyDays.Nanoseconds(),
+	})
 }
 
 func embedFromOrder(order Order) *discordgo.MessageEmbed {

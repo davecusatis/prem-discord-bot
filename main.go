@@ -14,16 +14,22 @@ func main() {
 	channelID = mustGetConfigValue("CHANNEL_ID")
 	botport := getConfigValue("BOT_PORT", "8000")
 
-	var err error
-	discordSession, err = discordgo.New("Bot " + discordToken)
+	discSession, err := discordgo.New("Bot " + discordToken)
 	if err != nil {
 		log.Fatal("Error creating discord session")
 	}
-	err = discordSession.Open()
+	err = discSession.Open()
 	if err != nil {
 		log.Fatal("Error opening discord connection")
 	}
-	http.HandleFunc("/webhook", sellyHandler)
+
+	connStr := ""
+	db, err := newDatabase(connStr)
+	http.Handle("/webhook", &SellyHandler{
+		discordSession: discSession,
+		db:             db,
+	})
+
 	log.Printf("Starting bot on port %s", botport)
 	log.Fatal(http.ListenAndServe(":"+botport, nil))
 }
