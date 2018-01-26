@@ -25,8 +25,7 @@ func main() {
 		log.Fatal("Error opening discord connection")
 	}
 
-	connStr := ""
-	db, err := newDatabase(connStr)
+	db, err := newDatabase()
 	http.Handle("/webhook", &SellyHandler{
 		discordSession: discSession,
 		db:             db,

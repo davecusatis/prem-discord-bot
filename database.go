@@ -11,6 +11,7 @@ import (
 // User represents a premium user
 type User struct {
 	email      string
+	product    string
 	discordTag string
 	startDate  int64
 	endDate    int64
@@ -21,7 +22,12 @@ type Database struct {
 	db *sql.DB
 }
 
-func newDatabase(connectionStr string) (*Database, error) {
+func newDatabase() (*Database, error) {
+	dbUser := mustGetConfigValue("DB_USER")
+	dbPassword := mustGetConfigValue("DB_PASSWORD")
+	dbPort := mustGetConfigValue("DB_PORT")
+	dbName := mustGetConfigValue("DB_NAME")
+	connectionStr := fmt.Sprintf("user=%s dbname=%s password=%s port=%s", dbUser, dbName, dbPassword, dbPort)
 	db, err := sql.Open("postgres", connectionStr)
 	if err != nil {
 		log.Fatalf("Error creating database connection")
@@ -38,8 +44,9 @@ func newDatabase(connectionStr string) (*Database, error) {
 
 func (db *Database) addUser(user *User) error {
 	var email string
-	err := db.db.QueryRow(fmt.Sprintf(`INSERT INTO users(Email, Discord, StartDate, EndDate ) VALUES('%s', '%s', '%d', '%d') RETURNING user_id`,
+	err := db.db.QueryRow(fmt.Sprintf(`INSERT INTO users(email, product, discord, start_date, end_date ) VALUES('%s', '%s', '%s', '%d', '%d') RETURNING user_id`,
 		user.email,
+		user.product,
 		user.discordTag,
 		user.startDate,
 		user.endDate,

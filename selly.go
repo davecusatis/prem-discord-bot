@@ -81,7 +81,7 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func embedFromOrder(order Order) *discordgo.MessageEmbed {
-	fields := make([]*discordgo.MessageEmbedField, 4)
+	fields := make([]*discordgo.MessageEmbedField, 5)
 
 	fields[0] = new(discordgo.MessageEmbedField)
 	fields[0].Name = "ID"
@@ -102,6 +102,11 @@ func embedFromOrder(order Order) *discordgo.MessageEmbed {
 	fields[3].Name = "Discord"
 	fields[3].Value = order.Custom["0"]
 	fields[3].Inline = true
+
+	fields[4] = new(discordgo.MessageEmbedField)
+	fields[4].Name = "Product"
+	fields[4].Value = order.ProductID
+	fields[4].Inline = true
 
 	embed := new(discordgo.MessageEmbed)
 	thumbnail := new(discordgo.MessageEmbedThumbnail)
