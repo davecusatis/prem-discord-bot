@@ -8,6 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// User represents a premium user
 type User struct {
 	email      string
 	discordTag string
@@ -15,6 +16,7 @@ type User struct {
 	endDate    int64
 }
 
+// Database is the wrapper around postgres connection
 type Database struct {
 	db *sql.DB
 }
@@ -34,18 +36,9 @@ func newDatabase(connectionStr string) (*Database, error) {
 	}, nil
 }
 
-func generateAddUserInsert(user *User) string {
-	return fmt.Sprintf(`INSERT INTO users(Email, Discord, StartDate, EndDate ) VALUES('%s', '%s', '%s', '%s') RETURNING id`,
-		user.email,
-		user.discordTag,
-		user.startDate,
-		user.endDate,
-	)
-}
-
 func (db *Database) addUser(user *User) error {
 	var email string
-	err := db.db.QueryRow(fmt.Sprintf(`INSERT INTO users(Email, Discord, StartDate, EndDate ) VALUES('%s', '%s', '%s', '%s') RETURNING id`,
+	err := db.db.QueryRow(fmt.Sprintf(`INSERT INTO users(Email, Discord, StartDate, EndDate ) VALUES('%s', '%s', '%d', '%d') RETURNING user_id`,
 		user.email,
 		user.discordTag,
 		user.startDate,

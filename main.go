@@ -14,6 +14,8 @@ func main() {
 	channelID = mustGetConfigValue("CHANNEL_ID")
 	botport := getConfigValue("BOT_PORT", "8000")
 
+	// TODO: add db config
+
 	discSession, err := discordgo.New("Bot " + discordToken)
 	if err != nil {
 		log.Fatal("Error creating discord session")

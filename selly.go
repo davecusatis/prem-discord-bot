@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	MONTH_DURATION = "720h"
+	MonthDuration = "720h"
 )
 
 var (
@@ -21,6 +21,7 @@ var (
 	discordSession *discordgo.Session
 )
 
+// SellyHandler is the type representing the handler type
 type SellyHandler struct {
 	db             *Database
 	discordSession *discordgo.Session
@@ -70,7 +71,7 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// todo add OR update
 	now := time.Now().UTC().UnixNano()
-	thirtyDays, _ := time.ParseDuration(MONTH_DURATION)
+	thirtyDays, _ := time.ParseDuration(MonthDuration)
 	err = h.db.addUser(&User{
 		email:      order.Email,
 		discordTag: order.Custom["0"],
