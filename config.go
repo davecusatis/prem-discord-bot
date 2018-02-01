@@ -1,19 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"os"
-	"strings"
 )
 
 var (
-	configs map[string]string
+	configs      map[string]string
+	validConfigs map[string]bool
 )
+
+func init() {
+	validConfigs = map[string]bool{
+		"APP_SECRET":    true,
+		"DISCORD_TOKEN": true,
+		"CHANNEL_ID":    true,
+		"BOT_PORT":      false,
+	}
+}
 
 func parseConfig() {
 	configs = make(map[string]string)
-	for _, env := range os.Environ() {
-		e := strings.Split(env, "=")
-		configs[e[0]] = e[1]
+	for configName, required := range validConfigs {
+		if configValue, ok := os.LookupEnv(configName); ok && configValue != "" {
+			configs[configName] = configValue
+		} else if required {
+			panic(fmt.Sprintf("%s environment variable is not set", configName))
+		}
 	}
 }
 
