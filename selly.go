@@ -11,7 +11,17 @@ import (
 )
 
 const (
+	// WeekDuration is the duration, in hours, for a week
+	WeekDuration = "168h"
+
+	// MonthDuration is the duration, in hours, for a month
 	MonthDuration = "720h"
+
+	// ThreeMonthDuration is the duration, in hours, for three months
+	ThreeMonthDuration = "2190h"
+
+	// OneYearDuration is the duration, in hours, for a year
+	OneYearDuration = "8760h"
 )
 
 var (
@@ -56,28 +66,40 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	secret := req.URL.Query().Get("secret")
 	if secret != appSecret {
 		log.Print("Wrong secret provided")
+		return
 	}
 
 	var order Order
 	err := json.NewDecoder(req.Body).Decode(&order)
 	if err != nil {
 		log.Printf("Error parsing body: %s", err)
+		return
 	}
 
 	_, err = h.discordSession.ChannelMessageSendEmbed(channelID, embedFromOrder(order))
 	if err != nil {
 		log.Printf("Error sending message to channel %s: %s", channelID, err)
+		return
 	}
 
-	// todo add OR update
+	duration, err := h.db.getDurationByProductID(order.ProductID)
+	if err != nil {
+		log.Printf("Error getting duration for product id %s", order.ProductID)
+		return
+	}
+
 	now := time.Now().UTC().UnixNano()
-	thirtyDays, _ := time.ParseDuration(MonthDuration)
-	err = h.db.addUser(&User{
+	// todo: add OR update
+	userToAdd := &User{
 		email:      order.Email,
 		discordTag: order.Custom["0"],
 		startDate:  now,
-		endDate:    now + thirtyDays.Nanoseconds(),
-	})
+		endDate:    now + duration.Nanoseconds(),
+	}
+	err = h.db.addUser(userToAdd)
+	if err != nil {
+		log.Printf("Error adding user to database: %#v", userToAdd)
+	}
 }
 
 func embedFromOrder(order Order) *discordgo.MessageEmbed {

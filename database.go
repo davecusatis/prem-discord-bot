@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -55,6 +56,20 @@ func (db *Database) addUser(user *User) error {
 	if err != sql.ErrNoRows && err != nil {
 		return err
 	}
-	log.Printf("Added user")
 	return nil
+}
+
+func (db *Database) getDurationByProductID(productID string) (*time.Duration, error) {
+	var duration string
+	err := db.db.QueryRow(fmt.Sprintf("SELECT duration FROM products WHERE product_id = '%s'", productID)).Scan(&duration)
+
+	if err != sql.ErrNoRows && err != nil {
+		return nil, err
+	}
+	ret, err := time.ParseDuration(duration)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
 }
