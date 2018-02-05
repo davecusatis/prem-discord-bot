@@ -10,20 +10,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const (
-	// WeekDuration is the duration, in hours, for a week
-	WeekDuration = "168h"
-
-	// MonthDuration is the duration, in hours, for a month
-	MonthDuration = "720h"
-
-	// ThreeMonthDuration is the duration, in hours, for three months
-	ThreeMonthDuration = "2190h"
-
-	// OneYearDuration is the duration, in hours, for a year
-	OneYearDuration = "8760h"
-)
-
 var (
 	appSecret      string
 	discordToken   string
@@ -92,13 +78,14 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// todo: add OR update
 	userToAdd := &User{
 		email:      order.Email,
+		product:    order.ProductID,
 		discordTag: order.Custom["0"],
 		startDate:  now,
 		endDate:    now + duration.Nanoseconds(),
 	}
 	err = h.db.addUser(userToAdd)
 	if err != nil {
-		log.Printf("Error adding user to database: %#v", userToAdd)
+		log.Printf("Error %s adding user to database: %#v", err, userToAdd)
 	}
 }
 
