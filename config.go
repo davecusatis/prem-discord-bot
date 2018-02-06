@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"strings"
 )
 
 var (
@@ -21,12 +21,9 @@ func init() {
 
 func parseConfig() {
 	configs = make(map[string]string)
-	for configName, required := range validConfigs {
-		if configValue, ok := os.LookupEnv(configName); ok && configValue != "" {
-			configs[configName] = configValue
-		} else if required {
-			panic(fmt.Sprintf("%s environment variable is not set", configName))
-		}
+	for _, env := range os.Environ() {
+		e := strings.Split(env, "=")
+		configs[e[0]] = e[1]
 	}
 }
 

@@ -13,6 +13,7 @@ func main() {
 	discordToken = mustGetConfigValue("DISCORD_TOKEN")
 	channelID = mustGetConfigValue("CHANNEL_ID")
 	botport := getConfigValue("BOT_PORT", "8000")
+	godChannelID := mustGetConfigValue("GOD_CHANNEL_ID")
 
 	// TODO: add db config
 
@@ -29,6 +30,11 @@ func main() {
 	http.Handle("/webhook", &SellyHandler{
 		discordSession: discSession,
 		db:             db,
+	})
+
+	http.Handle("/god", &GodHandler{
+		godChannelID:   godChannelID,
+		discordSession: discSession,
 	})
 
 	log.Printf("Starting bot on port %s", botport)
