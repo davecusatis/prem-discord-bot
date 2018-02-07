@@ -8,7 +8,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	coinApi "github.com/miguelmota/go-coinmarketcap"
-	"github.com/olekukonko/tablewriter"
 )
 
 const (
@@ -100,25 +99,17 @@ func sendPriceCheckMessage(disc *discordgo.Session, channelID, ticker string) er
 }
 
 func generateTopTenMessage(coins map[string]coinApi.Coin) string {
-
-	rankMap := make(map[int][]string)
+	rankMap := make(map[int]string)
 	for _, coin := range coins {
-		rankMap[coin.Rank] = []string{
-			fmt.Sprint(coin.Rank),
-			coin.Name,
-			fmt.Sprintf("$%.2f", coin.PriceUsd),
-			fmt.Sprintf("$%.2f", coin.MarketCapUsd)}
+		rankMap[coin.Rank] = fmt.Sprintf("%d. %s $%.2f\n", coin.Rank, coin.Name, coin.PriceUsd)
 	}
 
 	i := 1
 	var buffer bytes.Buffer
-	table := tablewriter.NewWriter(&buffer)
-	table.SetHeader([]string{"Rank", "Coin", "Price USD", "Market Cap"})
 	for i <= 10 {
-		table.Append(rankMap[i])
+		buffer.WriteString(rankMap[i])
 		i++
 	}
-	table.Render()
 	return buffer.String()
 }
 
