@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/anaskhan96/soup"
+  packages = ["."]
+  revision = "7a8d31f81bad1a5abeed0d0219c35e5e295a5a76"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/bwmarrin/discordgo"
   packages = ["."]
   revision = "4a33b9bc7c56cfdb9bb244e33e83cb3941fe2bdc"
@@ -21,13 +27,25 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/miguelmota/go-coinmarketcap"
+  packages = ["."]
+  revision = "7984dad06d8a2b15ce4531eb808aa3542fc0ebaa"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["nacl/secretbox","poly1305","salsa20/salsa"]
   revision = "0efb9460aaf800c6376acf625be2853bceac2e06"
 
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["html","html/atom"]
+  revision = "2fb46b16b8dda405028c50f7c7f0f9dd1fa6bfb1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8d8928d845c35ac1e1a9be373e78f91aeed9b674863a6afbfb9420c9602f5c75"
+  inputs-digest = "a92857e90ebd159dfea4155ea84263dc172cae1b298dc50a2ac0e17a41c49e9a"
   solver-name = "gps-cdcl"
   solver-version = 1
