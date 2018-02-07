@@ -39,7 +39,7 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if cmdArray[0] == TopTenCMD {
-		err := sendTopTenInfoMessage(disc)
+		err := sendTopTenInfoMessage(disc, m.ChannelID)
 		if err != nil {
 			log.Printf("Error checking top ten %s", err)
 		}
@@ -113,7 +113,7 @@ func generateTopTenMessage(coins map[string]coinApi.Coin) string {
 	return buffer.String()
 }
 
-func sendTopTenInfoMessage(disc *discordgo.Session) error {
+func sendTopTenInfoMessage(disc *discordgo.Session, channelID string) error {
 	topCoins, err := coinApi.GetAllCoinData(10)
 	if err != nil {
 		_, _ = disc.ChannelMessageSend(channelID, fmt.Sprint("Error getting top coins from coinmarketcap. Please try again later"))
