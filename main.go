@@ -18,6 +18,7 @@ func main() {
 	// TODO: add db config
 
 	discSession, err := discordgo.New("Bot " + discordToken)
+	defer discSession.Close()
 	if err != nil {
 		log.Fatal("Error creating discord session")
 	}
@@ -25,6 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error opening discord connection")
 	}
+	discSession.AddHandler(messageHandler)
 
 	db, err := newDatabase()
 	http.Handle("/webhook", &SellyHandler{
