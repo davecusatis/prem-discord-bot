@@ -3,7 +3,6 @@ import os
 from pprint import pprint
 
 selly_api_url = 'https://selly.gg/api/v2'
-product_list = ['47ceb9f0', '7aec2736', '93d65302', '7707661e', 'b2c330c7']
 
 def main():
     selly_key = os.getenv('SELLY_KEY')
@@ -28,9 +27,12 @@ def get_orders(selly_key):
 
     return orders
 
+def get_products():
+    return {'47ceb9f0': '1yr', '7aec2736': '3mo', '93d65302': '1wk', '7707661e': '1mo', 'b2c330c7': '1mo'}
+
 def dump_orders(orders):
     for order in orders:
-        if order['status'] == 100 and order['product_id'] in product_list:
+        if order['status'] == 100 and order['product_id'] in get_products():
             pprint(order['email'] + " : " + order['custom']['0'])
 
 if __name__ == "__main__":
