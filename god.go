@@ -9,11 +9,13 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// GodHandler is the handler for god mode messages
 type GodHandler struct {
 	godChannelID   string
 	discordSession *discordgo.Session
 }
 
+// GodText is the body we expect being passed to the god mode endpoint
 type GodText struct {
 	Text string `json:"text"`
 }
@@ -36,7 +38,7 @@ func (h *GodHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	var godMessage GodText
 	err = json.Unmarshal(body, &godMessage)
 	if err != nil {
-		log.Print("couldn't parse god text: %s", err)
+		log.Printf("couldn't parse god text: %s", err)
 		http.Error(w, "bad god text", http.StatusBadRequest)
 		return
 	}
