@@ -62,9 +62,8 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, err = h.discordSession.ChannelMessageSendEmbed(channelID, embedFromOrder(order))
-	if err != nil {
-		log.Printf("Error sending message to channel %s: %s", channelID, err)
+	if !validOrder(order) {
+		log.Printf("Invalid order %s for user: %s ", order.ID, order.Email)
 		return
 	}
 
@@ -87,6 +86,19 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("Error %s adding user to database: %#v", err, userToAdd)
 	}
+
+	_, err = h.discordSession.ChannelMessageSendEmbed(channelID, embedFromOrder(order))
+	if err != nil {
+		log.Printf("Error sending message to channel %s: %s", channelID, err)
+		return
+	}
+}
+
+func validOrder(order Order) bool {
+	if order.Status != 100 {
+		return false
+	}
+	return true
 }
 
 func embedFromOrder(order Order) *discordgo.MessageEmbed {

@@ -18,11 +18,11 @@ func main() {
 	// TODO: add db config
 
 	discSession, err := discordgo.New("Bot " + discordToken)
-	defer discSession.Close()
 	if err != nil {
 		log.Fatal("Error creating discord session")
 	}
 	err = discSession.Open()
+	defer discSession.Close()
 	if err != nil {
 		log.Fatal("Error opening discord connection")
 	}
