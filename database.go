@@ -43,16 +43,41 @@ func newDatabase() (*Database, error) {
 	}, nil
 }
 
-func (db *Database) addUser(user *User) error {
-	var email string
-	err := db.db.QueryRow(fmt.Sprintf(`INSERT INTO users(email, product, discord, start_date, end_date ) VALUES('%s', '%s', '%s', '%d', '%d') RETURNING user_id`,
-		user.email,
-		user.product,
-		user.discordTag,
-		user.startDate,
-		user.endDate,
-	)).Scan(&email)
+func (db *Database) userExists(email string) (bool, error) {
+	var exists bool
+	existsQuery := fmt.Sprintf("SELECT EXISTS (SELECT 1 FROM users WHERE email = '%s')", email)
+	err := db.db.QueryRow(existsQuery).Scan(&exists)
+	if err != nil {
+		return exists, err
+	}
+	return exists, nil
+}
 
+func (db *Database) addOrUpdateUser(user *User) error {
+	exists, err := db.userExists(user.email)
+	if err != nil {
+		return err
+	}
+
+	var query string
+	if exists {
+		query = fmt.Sprintf(`UPDATE users SET product = '%s', discord = '%s', start_date = '%d', end_date = '%d' WHERE email = '%s' RETURNING id`,
+			user.product,
+			user.discordTag,
+			user.startDate,
+			user.endDate,
+			user.email)
+	} else {
+		query = fmt.Sprintf(`INSERT INTO users(email, product, discord, start_date, end_date ) VALUES('%s', '%s', '%s', '%d', '%d') RETURNING id`,
+			user.email,
+			user.product,
+			user.discordTag,
+			user.startDate,
+			user.endDate)
+	}
+
+	var ID string
+	err = db.db.QueryRow(query).Scan(&ID)
 	if err != sql.ErrNoRows && err != nil {
 		return err
 	}

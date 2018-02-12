@@ -83,7 +83,7 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		startDate:  now,
 		endDate:    now + duration.Nanoseconds(),
 	}
-	err = h.db.addUser(userToAdd)
+	err = h.db.addOrUpdateUser(userToAdd)
 	if err != nil {
 		log.Printf("Error %s adding user to database: %#v", err, userToAdd)
 	}
