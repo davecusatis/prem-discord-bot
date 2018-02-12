@@ -19,12 +19,12 @@ func main() {
 
 	discSession, err := discordgo.New("Bot " + discordToken)
 	if err != nil {
-		log.Fatal("Error creating discord session")
+		log.Fatalf("Error creating discord session: %s", err)
 	}
 	err = discSession.Open()
 	defer discSession.Close()
 	if err != nil {
-		log.Fatal("Error opening discord connection")
+		log.Fatalf("Error opening discord connection: %s", err)
 	}
 	discSession.AddHandler(messageHandler)
 
