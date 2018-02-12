@@ -28,10 +28,10 @@ func newDatabase() (*Database, error) {
 	dbPassword := mustGetConfigValue("DB_PASSWORD")
 	dbPort := mustGetConfigValue("DB_PORT")
 	dbName := mustGetConfigValue("DB_NAME")
-	connectionStr := fmt.Sprintf("user=%s dbname=%s password=%s port=%s", dbUser, dbName, dbPassword, dbPort)
+	connectionStr := fmt.Sprintf("user=%s dbname=%s password=%s port=%s sslmode=disable", dbUser, dbName, dbPassword, dbPort)
 	db, err := sql.Open("postgres", connectionStr)
 	if err != nil {
-		log.Fatalf("Error creating database connection")
+		log.Fatalf("Error creating database connection: %s", err)
 	}
 
 	err = db.Ping()

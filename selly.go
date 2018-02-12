@@ -11,10 +11,11 @@ import (
 )
 
 var (
-	appSecret      string
-	discordToken   string
-	channelID      string
-	discordSession *discordgo.Session
+	appSecret    string
+	discordToken string
+	channelID    string
+	guildID      string
+	roleID       string
 )
 
 // SellyHandler is the type representing the handler type
@@ -87,11 +88,43 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Printf("Error %s adding user to database: %#v", err, userToAdd)
 	}
 
+	err = addPaidRoleToUser(h.discordSession, userToAdd.discordTag)
+	if err != nil {
+		log.Printf("Error adding paid role to user %s: %s", userToAdd.discordTag, err)
+		_, _ = h.discordSession.ChannelMessageSend(
+			channelID,
+			fmt.Sprintf("@davethecust#6318 @Tower#6969, these rat basterds didn't do the discord thing properly: %#v", userToAdd.discordTag))
+	}
+
 	_, err = h.discordSession.ChannelMessageSendEmbed(channelID, embedFromOrder(order))
 	if err != nil {
 		log.Printf("Error sending message to channel %s: %s", channelID, err)
 		return
 	}
+}
+
+func addPaidRoleToUser(session *discordgo.Session, user string) error {
+	members, err := session.GuildMembers(guildID, "", 1000)
+	if err != nil {
+		return fmt.Errorf("Discord error while trying to search guild members: %s", err)
+	}
+
+	userID := ""
+	for _, member := range members {
+		if fmt.Sprintf("%s#%s", member.User.Username, member.User.Discriminator) == user {
+			userID = member.User.ID
+		}
+	}
+	if userID == "" {
+		return fmt.Errorf("Unable to assign Paid role to user %s", userID)
+	}
+
+	err = session.GuildMemberRoleAdd(guildID, userID, roleID)
+	if err != nil {
+		return fmt.Errorf("Discord error while trying to add role to user: %s", err)
+	}
+
+	return nil
 }
 
 func validOrder(order Order) bool {

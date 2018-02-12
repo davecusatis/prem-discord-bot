@@ -14,8 +14,8 @@ func main() {
 	channelID = mustGetConfigValue("CHANNEL_ID")
 	botport := getConfigValue("BOT_PORT", "8000")
 	godChannelID := mustGetConfigValue("GOD_CHANNEL_ID")
-
-	// TODO: add db config
+	guildID = mustGetConfigValue("GUILD_ID")
+	roleID = mustGetConfigValue("ROLE_ID")
 
 	discSession, err := discordgo.New("Bot " + discordToken)
 	if err != nil {
