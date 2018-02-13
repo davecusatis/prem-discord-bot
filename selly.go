@@ -74,26 +74,43 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	discordUsername, discordDiscriminator := extractNameAndDiscriminator(order.Custom["0"])
+	if discordUsername == "" && discordDiscriminator == "" {
+		log.Printf("Error extracting username and discriminator: %s", err)
+		_, _ = h.discordSession.ChannelMessageSend(
+			channelID,
+			fmt.Sprintf("@davethecust#6318 @Tower#6969, user did not provide discord tag %#v", order.Email))
+	}
+
+	discordID, err := findUserID(h.discordSession, guildID, discordUsername, discordDiscriminator)
+	if err != nil || discordID == "" {
+		log.Printf("Can't find userID")
+		_, _ = h.discordSession.ChannelMessageSend(
+			channelID,
+			fmt.Sprintf("@davethecust#6318 @Tower#6969, user not in the server %#v", order.Email))
+	}
+
 	now := time.Now().UTC().UnixNano()
-	// todo: add OR update
 	userToAdd := &User{
 		email:      order.Email,
 		product:    order.ProductID,
 		discordTag: order.Custom["0"],
+		discordID:  discordID,
 		startDate:  now,
 		endDate:    now + duration.Nanoseconds(),
 	}
+
 	err = h.db.addOrUpdateUser(userToAdd)
 	if err != nil {
 		log.Printf("Error %s adding user to database: %#v", err, userToAdd)
 	}
 
-	err = addPaidRoleToUser(h.discordSession, userToAdd.discordTag)
+	err = addPaidRoleToUser(h.discordSession, discordID)
 	if err != nil {
-		log.Printf("Error adding paid role to user %s: %s", userToAdd.discordTag, err)
+		log.Printf("Error adding paid role to user %s: %s", discordID, err)
 		_, _ = h.discordSession.ChannelMessageSend(
 			channelID,
-			fmt.Sprintf("@davethecust#6318 @Tower#6969, these rat basterds didn't do the discord thing properly: %#v", userToAdd.discordTag))
+			fmt.Sprintf("@davethecust#6318 @Tower#6969, these rat basterds didn't do the discord thing properly: %#v", userToAdd))
 	}
 
 	_, err = h.discordSession.ChannelMessageSendEmbed(channelID, embedFromOrder(order))
@@ -103,27 +120,14 @@ func (h *SellyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func addPaidRoleToUser(session *discordgo.Session, user string) error {
-	members, err := session.GuildMembers(guildID, "", 1000)
-	if err != nil {
-		return fmt.Errorf("Discord error while trying to search guild members: %s", err)
-	}
-
-	userID := ""
-	for _, member := range members {
-		if fmt.Sprintf("%s#%s", member.User.Username, member.User.Discriminator) == user {
-			userID = member.User.ID
-		}
-	}
+func addPaidRoleToUser(session *discordgo.Session, userID string) error {
 	if userID == "" {
 		return fmt.Errorf("Unable to assign Paid role to user %s", userID)
 	}
-
-	err = session.GuildMemberRoleAdd(guildID, userID, roleID)
+	err := session.GuildMemberRoleAdd(guildID, userID, roleID)
 	if err != nil {
 		return fmt.Errorf("Discord error while trying to add role to user: %s", err)
 	}
-
 	return nil
 }
 
@@ -131,6 +135,11 @@ func validOrder(order Order) bool {
 	if order.Status != 100 {
 		return false
 	}
+	_, ok := order.Custom["0"]
+	if !ok {
+		return false
+	}
+
 	return true
 }
 

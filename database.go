@@ -14,6 +14,7 @@ type User struct {
 	email      string
 	product    string
 	discordTag string
+	discordID  string
 	startDate  int64
 	endDate    int64
 }
@@ -61,17 +62,19 @@ func (db *Database) addOrUpdateUser(user *User) error {
 
 	var query string
 	if exists {
-		query = fmt.Sprintf(`UPDATE users SET product = '%s', discord = '%s', start_date = '%d', end_date = '%d' WHERE email = '%s' RETURNING id`,
+		query = fmt.Sprintf(`UPDATE users SET product = '%s', discord = '%s', discord_id = '%s', start_date = '%d', end_date = '%d' WHERE email = '%s' RETURNING id`,
 			user.product,
 			user.discordTag,
+			user.discordID,
 			user.startDate,
 			user.endDate,
 			user.email)
 	} else {
-		query = fmt.Sprintf(`INSERT INTO users(email, product, discord, start_date, end_date ) VALUES('%s', '%s', '%s', '%d', '%d') RETURNING id`,
+		query = fmt.Sprintf(`INSERT INTO users(email, product, discord, discord_id, start_date, end_date ) VALUES('%s', '%s', '%s', '%s', '%d', '%d') RETURNING id`,
 			user.email,
 			user.product,
 			user.discordTag,
+			user.discordID,
 			user.startDate,
 			user.endDate)
 	}
