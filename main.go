@@ -7,6 +7,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var (
+	db *Database
+)
+
 func main() {
 	parseConfig()
 	appSecret = mustGetConfigValue("APP_SECRET")
@@ -28,7 +32,7 @@ func main() {
 	}
 	discSession.AddHandler(messageHandler)
 
-	db, err := newDatabase()
+	db, err = newDatabase()
 	http.Handle("/webhook", &SellyHandler{
 		discordSession: discSession,
 		db:             db,

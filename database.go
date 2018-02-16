@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -100,4 +101,22 @@ func (db *Database) getDurationByProductID(productID string) (*time.Duration, er
 	}
 
 	return &ret, nil
+}
+
+func (db *Database) getMembershipByDiscordID(discordID string) (string, error) {
+	var timestamp string
+	err := db.db.QueryRow(fmt.Sprintf("SELECT end_date FROM users WHERE discord_id = '%s'", discordID)).Scan(&timestamp)
+
+	if err != sql.ErrNoRows && err != nil {
+		return "", err
+	}
+
+	i, err := strconv.ParseInt(timestamp, 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("Unable to parse timestamp")
+	}
+
+	pst, _ := time.LoadLocation("America/New_York")
+	endDate := time.Unix(0, i)
+	return endDate.In(pst).String(), nil
 }

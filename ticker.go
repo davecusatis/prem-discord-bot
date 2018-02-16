@@ -17,6 +17,9 @@ const (
 	// TopTenCMD is the command to check the top 10 on cmc
 	TopTenCMD = ".top"
 
+	// MembershipCheckCMD is the command to check a users membership
+	MembershipCheckCMD = ".check"
+
 	// SpaceDelimiter is the delimiter to split commands on
 	SpaceDelimiter = " "
 )
@@ -25,7 +28,7 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == disc.State.User.ID {
 		return
 	}
-	if !strings.Contains(m.Content, PriceCheckCMD) && !strings.Contains(m.Content, TopTenCMD) {
+	if !strings.Contains(m.Content, PriceCheckCMD) && !strings.Contains(m.Content, TopTenCMD) && !strings.Contains(m.Content, MembershipCheckCMD) {
 		return
 	}
 
@@ -44,6 +47,14 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Printf("Error checking top ten %s", err)
 		}
 		return
+	}
+
+	if cmdArray[0] == MembershipCheckCMD {
+		endDate, err := db.getMembershipByDiscordID(m.Author.ID)
+		if err != nil {
+			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error getting membership data %s. Contact @davethecust", endDate))
+		}
+		_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Your membership expires at %s,", endDate))
 	}
 }
 
