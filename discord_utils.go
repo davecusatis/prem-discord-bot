@@ -73,3 +73,10 @@ func isDirectMessage(session *discordgo.Session, channelID string) (bool, error)
 
 	return channel.Type == DMType, nil
 }
+
+func isTower(userID string) bool {
+	if userID == "223200252117647362" || userID == "236692186647887883" {
+		return true
+	}
+	return false
+}

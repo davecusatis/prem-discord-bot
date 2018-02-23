@@ -64,7 +64,25 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 
-		endDate, err := db.getMembershipByDiscordID(m.Author.ID)
+		var endDate string
+		if isTower(m.Author.ID) && len(cmdArray) > 1 {
+			username, userDiscriminator := extractNameAndDiscriminator(cmdArray[1])
+			userID, innerErr := findUserID(disc, guildID, username, userDiscriminator)
+			if innerErr != nil {
+				_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("you fucked up broe. could not find user: %s.", innerErr))
+				return
+			}
+
+			endDate, err = db.getMembershipByDiscordID(userID)
+			if err != nil {
+				_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error getting membership data %s. Please contact @davethecust", err))
+				return
+			}
+			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Your membership expires at %s.", endDate))
+			return
+		}
+
+		endDate, err = db.getMembershipByDiscordID(m.Author.ID)
 		if err != nil {
 			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error getting membership data %s. Please contact @davethecust", err))
 			return
