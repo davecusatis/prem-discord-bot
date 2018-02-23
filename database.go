@@ -113,10 +113,9 @@ func (db *Database) getMembershipByDiscordID(discordID string) (string, error) {
 
 	i, err := strconv.ParseInt(timestamp, 10, 64)
 	if err != nil {
-		return "", fmt.Errorf("Unable to parse timestamp")
+		return "", fmt.Errorf("Unable to parse timestamp value %s", timestamp)
 	}
 
-	pst, _ := time.LoadLocation("America/New_York")
-	endDate := time.Unix(0, i)
-	return endDate.In(pst).String(), nil
+	endDate := time.Unix(0, i).Format("Mon Jan 2 15:04:05 PST 2006")
+	return endDate, nil
 }

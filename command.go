@@ -50,11 +50,23 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if cmdArray[0] == MembershipCheckCMD {
+		validDM, err := isDirectMessage(disc, m.ChannelID)
+		if err != nil {
+			log.Printf("Discord API error checking for direct message: %s", err)
+			return
+		}
+		if !validDM {
+			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("ALright MFer %s, listen up, you need to DM the bot. don't f*ck around bucko or bad things will happen.", m.Author.Mention()))
+			return
+		}
+
 		endDate, err := db.getMembershipByDiscordID(m.Author.ID)
 		if err != nil {
-			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error getting membership data %s. Contact @davethecust", endDate))
+			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error getting membership data %s. Please contact @davethecust", err))
+			return
 		}
-		_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Your membership expires at %s,", endDate))
+		_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Your membership expires at %s.", endDate))
+		return
 	}
 }
 
