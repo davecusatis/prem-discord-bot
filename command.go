@@ -34,6 +34,10 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 
 	cmdArray := strings.Split(m.Content, SpaceDelimiter)
 	if cmdArray[0] == PriceCheckCMD {
+		if len(cmdArray) < 2 {
+			_, _ = disc.ChannelMessageSend(m.ChannelID, "Please provide a valid coin.")
+			return
+		}
 		err := sendPriceCheckMessage(disc, m.ChannelID, cmdArray[1])
 		if err != nil {
 			log.Printf("Error checking price %s", err)
