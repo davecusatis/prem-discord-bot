@@ -17,9 +17,6 @@ const (
 	// TopTenCMD is the command to check the top 10 on cmc
 	TopTenCMD = ".top"
 
-	// MembershipCheckCMD is the command to check a users membership
-	MembershipCheckCMD = ".check"
-
 	// SpaceDelimiter is the delimiter to split commands on
 	SpaceDelimiter = " "
 )
@@ -28,7 +25,7 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == disc.State.User.ID {
 		return
 	}
-	if !strings.Contains(m.Content, PriceCheckCMD) && !strings.Contains(m.Content, TopTenCMD) && !strings.Contains(m.Content, MembershipCheckCMD) {
+	if !strings.Contains(m.Content, PriceCheckCMD) && !strings.Contains(m.Content, TopTenCMD) {
 		return
 	}
 
@@ -52,48 +49,17 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		return
 	}
+}
 
-	if cmdArray[0] == MembershipCheckCMD {
-		validDM, err := isDirectMessage(disc, m.ChannelID)
-		if err != nil {
-			log.Printf("Discord API error checking for direct message: %s", err)
-			return
-		}
-		if !validDM {
-			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("ALright MFer %s, listen up, you need to DM the bot. don't f*ck around bucko or bad things will happen.", m.Author.Mention()))
-			return
-		}
-
-		var endDate string
-		if isTower(m.Author.ID) && len(cmdArray) > 1 {
-			username, userDiscriminator := extractNameAndDiscriminator(cmdArray[1])
-			userID, innerErr := findUserID(disc, guildID, username, userDiscriminator)
-			if innerErr != nil {
-				_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("you fucked up broe. could not find user: %s.", innerErr))
-				return
-			}
-
-			endDate, err = db.getMembershipByDiscordID(userID)
-			if err != nil {
-				_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error getting membership data %s. Please contact @davethecust", err))
-				return
-			}
-			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Your membership expires at %s.", endDate))
-			return
-		}
-
-		endDate, err = db.getMembershipByDiscordID(m.Author.ID)
-		if err != nil {
-			_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error getting membership data %s. Please contact @davethecust", err))
-			return
-		}
-		_, _ = disc.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Your membership expires at %s.", endDate))
-		return
+func checkPrice(ticker string) (coinApi.Coin, error) {
+	if val, ok := tickerMap[ticker]; ok {
+		return coinApi.GetCoinData(val)
 	}
+	return coinApi.GetCoinData(ticker)
 }
 
 func sendPriceCheckMessage(disc *discordgo.Session, channelID, ticker string) error {
-	coinInfo, err := coinApi.GetCoinData(ticker)
+	coinInfo, err := checkPrice(ticker)
 	if err != nil {
 		_, _ = disc.ChannelMessageSend(channelID, fmt.Sprintf("Error getting info for %s from coinmarketcap: %s.", ticker, err.Error()))
 		return err
