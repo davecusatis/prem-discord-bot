@@ -35,7 +35,7 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 			_, _ = disc.ChannelMessageSend(m.ChannelID, "Please provide a valid coin.")
 			return
 		}
-		err := sendPriceCheckMessage(disc, m.ChannelID, cmdArray[1])
+		err := sendPriceCheckMessage(disc, m.ChannelID, strings.ToLower(cmdArray[1]))
 		if err != nil {
 			log.Printf("Error checking price %s", err)
 		}
