@@ -8,12 +8,14 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	av "github.com/fabianbaier/go-alpha-vantage"
 	coinApi "github.com/miguelmota/go-coinmarketcap"
 )
 
 var (
 	tickerMap map[string]string
 	mutex     *sync.Mutex
+	ac        *av.Client
 )
 
 func updateTickerMap() {
@@ -43,6 +45,9 @@ func main() {
 	godChannelID := mustGetConfigValue("GOD_CHANNEL_ID")
 	guildID = mustGetConfigValue("GUILD_ID")
 	roleID = mustGetConfigValue("ROLE_ID")
+	avToken := mustGetConfigValue("ALPHA_VANTAGE_TOKEN")
+
+	ac = av.NewClient(avToken)
 
 	discSession, err := discordgo.New("Bot " + discordToken)
 	if err != nil {
