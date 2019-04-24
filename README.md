@@ -1,7 +1,7 @@
 # Discord Crypto/Stock price checker
 
 ## Usage
-1. edit env file with your discord, and alpha vantage api tokens, specify a port if necessary. 
+1. edit env file with your discord, and alpha vantage api tokens.
 2. `go build`
 3. `./prem-discord-bot`
 

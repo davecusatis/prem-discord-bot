@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -40,7 +39,6 @@ func main() {
 	tickerMap = make(map[string]string)
 
 	discordToken = mustGetConfigValue("DISCORD_TOKEN")
-	botport := getConfigValue("BOT_PORT", "8000")
 	avToken := mustGetConfigValue("ALPHA_VANTAGE_TOKEN")
 
 	ac = av.NewClient(avToken)
@@ -71,7 +69,4 @@ func main() {
 			}
 		}
 	}()
-
-	log.Printf("Starting bot on port %s", botport)
-	log.Fatal(http.ListenAndServe(":"+botport, nil))
 }
