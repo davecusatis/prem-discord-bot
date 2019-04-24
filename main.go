@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	tickerMap map[string]string
-	mutex     *sync.Mutex
-	ac        *av.Client
+	tickerMap    map[string]string
+	mutex        *sync.Mutex
+	ac           *av.Client
+	discordToken string
 )
 
 func updateTickerMap() {
@@ -38,13 +39,8 @@ func main() {
 	mutex = &sync.Mutex{}
 	tickerMap = make(map[string]string)
 
-	appSecret = mustGetConfigValue("APP_SECRET")
 	discordToken = mustGetConfigValue("DISCORD_TOKEN")
-	channelID = mustGetConfigValue("CHANNEL_ID")
 	botport := getConfigValue("BOT_PORT", "8000")
-	godChannelID := mustGetConfigValue("GOD_CHANNEL_ID")
-	guildID = mustGetConfigValue("GUILD_ID")
-	roleID = mustGetConfigValue("ROLE_ID")
 	avToken := mustGetConfigValue("ALPHA_VANTAGE_TOKEN")
 
 	ac = av.NewClient(avToken)
@@ -59,11 +55,6 @@ func main() {
 		log.Fatalf("Error opening discord connection: %s", err)
 	}
 	discSession.AddHandler(messageHandler)
-
-	http.Handle("/god", &GodHandler{
-		godChannelID:   godChannelID,
-		discordSession: discSession,
-	})
 
 	go updateTickerMap()
 	ticker := time.NewTicker(3600 * time.Second)
