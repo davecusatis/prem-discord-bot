@@ -22,3 +22,11 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+.DS_Store
+.env
+
+dist/
+build/
+
+todo.txt
