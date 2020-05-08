@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/davecusatis/card_workout_gen/cardset"
 	cmc "github.com/miguelmota/go-coinmarketcap/pro/v1"
 )
 
@@ -16,6 +19,9 @@ const (
 	// PriceCheckStockCMD is the command to check coinmarketcap price
 	PriceCheckStockCMD = ".stock"
 
+	// WorkoutGenCMD is the command to generate a workout
+	WorkoutGenCMD = ".workout"
+
 	// SpaceDelimiter is the delimiter to split commands on
 	SpaceDelimiter = " "
 )
@@ -24,7 +30,7 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == disc.State.User.ID {
 		return
 	}
-	if !strings.Contains(m.Content, PriceCheckCMD) && !strings.Contains(m.Content, PriceCheckStockCMD) {
+	if !strings.Contains(m.Content, PriceCheckCMD) && !strings.Contains(m.Content, PriceCheckStockCMD) && !strings.Contains(m.Content, WorkoutGenCMD) {
 		return
 	}
 
@@ -51,6 +57,24 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Printf("Error checking price %s", err)
 		}
 		return
+	}
+
+	if cmdArray[0] == WorkoutGenCMD {
+		rand.Seed(time.Now().Unix())
+
+		workoutLength := 20
+		cardSet := cardset.InitSet()
+		var randomCard string
+		var randIndex int
+		var output strings.Builder
+		for i := 0; i < workoutLength; i++ {
+			randIndex = rand.Intn(len(cardSet.Cards))
+			randomCard = cardSet.Cards[randIndex]
+			output.WriteString(fmt.Sprintf("%d. %s \n", i+1, cardSet.GetCardTranslation(randomCard)))
+		}
+		cardSet = nil
+		randomCard = ""
+		randIndex = 0
 	}
 }
 

@@ -2,44 +2,73 @@
 
 
 [[projects]]
+  digest = "1:b0fd1aac4e6eee019a17b69dc4473f6e6eaa39b80b36473bb6ed958e4f8e471c"
   name = "github.com/bwmarrin/discordgo"
   packages = ["."]
+  pruneopts = ""
   revision = "4a33b9bc7c56cfdb9bb244e33e83cb3941fe2bdc"
   version = "v0.18.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:86c41f188cb3aabf717f449a5c65317a7b5a8eabb751ca1b624925ae9d768124"
+  name = "github.com/davecusatis/card_workout_gen"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b5b1f2ebe4c277e57f60fbf35a1b6b37e7c93066"
+
+[[projects]]
+  branch = "master"
+  digest = "1:99ab6aaf487f5f2384d3b5815399c60624e13299a5661bb9379009c77e6b6c95"
   name = "github.com/fabianbaier/go-alpha-vantage"
   packages = ["."]
+  pruneopts = ""
   revision = "f6c6bf29fc33beeba50b6bb1816ae55b2596ae1b"
 
 [[projects]]
+  digest = "1:64d212c703a2b94054be0ce470303286b177ad260b2f89a307e3d1bb6c073ef6"
   name = "github.com/gorilla/websocket"
   packages = ["."]
+  pruneopts = ""
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:d6791449d7026fac9a33185e03eb7c4a341634bf66e68d80e3ac2219560b7b6d"
   name = "github.com/miguelmota/go-coinmarketcap"
-  packages = ["."]
+  packages = ["pro/v1"]
+  pruneopts = ""
   revision = "80e912cc9318444805c59b31e2bfaf5136b68d7b"
   version = "v0.1.6"
 
 [[projects]]
+  digest = "1:1d7e1867c49a6dd9856598ef7c3123604ea3daabf5b83f303ff457bcbc410b1d"
   name = "github.com/pkg/errors"
   packages = ["."]
+  pruneopts = ""
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
 
 [[projects]]
   branch = "master"
+  digest = "1:495cfa598aaedd9f2fd07fcd1f985166be14a65abc7b14eeb3ba583b7df5fb15"
   name = "golang.org/x/crypto"
-  packages = ["nacl/secretbox","poly1305","salsa20/salsa"]
+  packages = [
+    "nacl/secretbox",
+    "poly1305",
+    "salsa20/salsa",
+  ]
+  pruneopts = ""
   revision = "0efb9460aaf800c6376acf625be2853bceac2e06"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "65271acebcfcd79ea906cb56cfe18856dbebffe0487341ab253ae936396ef870"
+  input-imports = [
+    "github.com/bwmarrin/discordgo",
+    "github.com/davecusatis/card_workout_gen",
+    "github.com/fabianbaier/go-alpha-vantage",
+    "github.com/miguelmota/go-coinmarketcap/pro/v1",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

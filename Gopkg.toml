@@ -24,3 +24,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/fabianbaier/go-alpha-vantage"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/davecusatis/card_workout_gen"
