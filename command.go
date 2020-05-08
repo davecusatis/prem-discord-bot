@@ -75,6 +75,7 @@ func messageHandler(disc *discordgo.Session, m *discordgo.MessageCreate) {
 		cardSet = nil
 		randomCard = ""
 		randIndex = 0
+		_, _ = disc.ChannelMessageSend(m.ChannelID, output.String())
 	}
 }
 
